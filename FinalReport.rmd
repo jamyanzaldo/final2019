@@ -1,14 +1,31 @@
 ---
-title: "Aides Drug"
-author: "Put your name here!"
-date: "put the date here"
-output: html_document
+title: "AIDS Drug"
+author: "Jamy Anzaldo"
+date: "5/23/19"
+output: 
+  html_document:
+    number_sections: true
+    toc: true
 ---
 
 ```{r include=FALSE,echo=FALSE}
 require(tidyverse)
 require(tigerstats)
 avast <-read.csv(file="avastivironal.csv",header=TRUE)
+avastMale<- filter(avast,sex=="M")
+avastFemale<- filter(avast,sex=="F")
+avastIV <- filter(avast,Ivdrug=="user")
+avastLBGT <- filter(avast, LBGT=="yes")
+
+```
+
+```{r}
+results <- read.csv(file = "avastivironal.csv")
+trialtbl=xtabs(~infected +treatment,data=avast)
+trialtblM=xtabs(~infected +treatment,data=avastMale)
+trialtblF=xtabs(~infected +treatment,data=avastFemale)
+trialtblL=xtabs(~infected +treatment,data=avastLBGT)
+trialtblI=xtabs(~infected +treatment,data=avastIV)
 ```
 
 # Introduction
@@ -20,26 +37,247 @@ A new  preventative aides (abacavirinol) is under test in clinical trials. Analy
 # Methods
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method. Discuss what data manipulations may be needed for example subsetting or other binning procedures and what sort of graphical displays and inferential tools will be used!-->
+In this variable analysis, each categorical hypothesis will have a bar chart as a graphical test. There will also be numerical data in the form of a cross tabulation and for inferential results a chi square test will be used.
 
-#Results
+#Results For General Population
 
 <!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
 
-## Descriptive Results
+## Descriptive Results For General Population
+we're using a bar chart and various tests to show the effectiveness of the drug against the general population
 
-### Graphical Descriptive Results
+$H_o$:abacavirinol has an effect on Whether one contracts AIDS
+
+$H_a$:abacavirinol does not have an effect on Whether one contracts AIDS
+
+### Graphical Descriptive Results For General Population
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
 
-### Numerical Descriptive Results
+```{r}
+barchartGC(~infected+treatment, data = avast, type = "percent")
+```
+
+The barchart shows that the general population is less likely to contract AIDS if they take the drug.
+  
+
+### Numerical Descriptive Results For General Population
+
+<!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+```{r}
+genTable = xtabs (~treatment+infected,data= avast)
+print(genTable)
+colPerc(trialtbl)
+rowPerc(trialtbl)
+```
+
+the cross tab, colperc and rowPerce tests show that the general popullation is less likely to get AIDS if they take the drug  
+
+## Inferential Results For General Population
+
+<!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
+```{r}
+chisq.test(genTable)
+
+fishtab <- xtabs(~infected + treatment, data=avast)
+fisher.test(fishtab)
+```
+
+since the p-value on the chisquared test is smaller than .05 we conclude that the results are indeed diffrent.and since the 95% interval would not contain the number 1 it means the drug works and the odd ratio shows that the dug should work about 7/10's of the time. therefore taking the drug seems to work against AIDS in the general population.
+
+#Results For Males
+
+<!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
+
+## Descriptive Results For Males
+
+we're using a bar chart and various tests to show the effectiveness of the drug against the male population
+
+$H_o$:abacavirinol has an effect on Whether males contract AIDS
+
+$H_a$:abacavirinol does not have an effect on Whether males contract AIDS
+
+### Graphical Descriptive Results For Males
+
+<!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
+
+```{r}
+barchartGC(~infected+treatment, data = avastMale, type = "percent")
+```
+
+The barchart shows that the males are less likely to contract AIDS if they take the drug.
+
+### Numerical Descriptive Results For Males
 
 <!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
 
-## Inferential Results
+```{r}
+genTableM = xtabs (~treatment+infected,data= avastMale)
+print(genTableM)
+colPerc(trialtblM)
+rowPerc(trialtblM)
+```
+
+the cross tab, colperc and rowPerce tests show that the male popullation is less likely to get AIDS if they take the drug 
+
+## Inferential Results For Males
 
 <!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
 
+```{r}
+chisq.test(genTableM)
+
+fishtab <- xtabs(~infected + treatment, data=avastMale)
+fisher.test(fishtab)
+```
+
+Since the p-value in the chi squared test is smaller than 0.05 it means that there is a significant difference between the control group and the people who took a drug or placebo. The number “1” does not fall between the 95% interval, which means that the drug does seem to work against AIDS in the case of males. But according to the odds ratio it only works about 4/10’s of the time to male population.
+
+#Results For Females
+
+<!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
+
+## Descriptive Results For Females
+
+we're using a bar chart and various tests to show the effectiveness of the drug against the female population
+
+$H_o$:abacavirinol has an effect on Whether females contract AIDS
+
+$H_a$:abacavirinol does not have an effect on Whether females contract AIDS
+
+### Graphical Descriptive Results For Females
+
+<!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
+
+```{r}
+barchartGC(~infected+treatment, data = avastFemale, type = "percent")
+```
+
+The barchart shows that in females the drug seems to not work.
+
+### Numerical Descriptive Results For Females
+
+<!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+
+```{r}
+genTableF = xtabs (~treatment+infected,data= avastFemale)
+print(genTableF)
+colPerc(trialtblF)
+rowPerc(trialtblF)
+```
+
+the cross tab, colperc and rowPerce tests show that the female popullation is more likely to get AIDS if they take the drug 
+
+## Inferential Results For Females
+
+<!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
+
+```{r}
+chisq.test(genTableF)
+
+fishtab <- xtabs(~infected + treatment, data=avastFemale)
+fisher.test(fishtab)
+```
+
+Since the p-value in the chi squared test is smaller than 0.05 it means that there is a significant difference between the control group and the people who took a drug or placebo. The 95% confidence interval is bigger than 1 which suggests that the drug does not work for women. In fact, the odd ratio predicts that women who take the drug are 1.5x more likely to contract AIDS.
+
+#Results For LGBT
+
+<!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
+
+## Descriptive Results For LGBT
+
+we're using a bar chart and various tests to show the effectiveness of the drug against the LGBT population
+
+$H_o$:abacavirinol has an effect on Whether members of the LGBT population contract AIDS
+
+$H_a$:abacavirinol does not have an effect on Whether members of the LGBT population contract AIDS
+
+### Graphical Descriptive Results For LGBT
+
+<!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
+
+```{r}
+barchartGC(~infected+treatment, data = avastLBGT, type = "percent")
+```
+
+The barchart shows that members of the LGBT group are less likely to contract AIDS if they take the drug.
+
+### Numerical Descriptive Results For LGBT
+
+<!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+
+```{r}
+genTableL = xtabs (~treatment+infected,data= avastLBGT)
+print(genTableL)
+colPerc(trialtblL)
+rowPerc(trialtblL)
+```
+the cross tab, colperc and rowPerce tests show that the popullation that is LGBT is less likely to get AIDS if they take the drug 
+
+## Inferential Results For LGBT
+
+<!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
+
+```{r}
+chisq.test(genTableL)
+
+fishtab <- xtabs(~infected + treatment, data=avastLBGT)
+fisher.test(fishtab)
+```
+
+Since the p-value in the chi squared test is smaller than 0.05 it means that there is a significant difference between the control group and the people who took a drug or placebo. The number “1” does not fall between the 95% confidence interval, which means that the drug works against AIDS for members of the LGBT community. But according to the odds ratio, it works only about 3/10’s of the time which is even less than the percentage for the males.
+
+#Results For IV-Positive
+
+<!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
+
+## Descriptive Results For IV-Positive
+
+we're using a bar chart and various tests to show the effectiveness of the drug against the IV-positive members of the population
+
+$H_o$:abacavirinol has an effect on Whether an IV drug user contracts AIDS
+
+$H_a$:abacavirinol does not have an effect on Whether an IV drug user contracts AIDS
+
+### Graphical Descriptive Results For IV-Positive
+
+<!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
+
+```{r}
+barchartGC(~infected+treatment, data = avastIV, type = "percent")
+```
+
+The barchart shows that in IV drug users the drug seems to drastically not work.
+
+### Numerical Descriptive Results For IV-Positive
+
+<!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+
+```{r}
+genTableI = xtabs (~treatment+infected,data= avastIV)
+print(genTableI)
+colPerc(trialtblI)
+rowPerc(trialtblI)
+```
+
+the cross tab, colperc and rowPerce tests show that the popullation that are IV-positiv are more likely to get AIDS if they take the drug 
+
+## Inferential Results For IV-Positive
+
+<!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
+
+```{r}
+chisq.test(genTableI)
+
+fishtab <- xtabs(~infected + treatment, data=avastIV)
+fisher.test(fishtab)
+```
+
+Since the p-value in the chi squared test is smaller than 0.05 it means that there is a significant difference between the control group and the people who took a drug or placebo. The 95% confidence interval is significantly bigger than “1” which means that the drug does not work for IV drug users. Additionally, the odds ratio suggests that IV drug users are 2.7x more likely to contract AIDS if they take the drug. Which is significantly more than the women’s chances of contracting AIDS if they take it. 
 
 # Discussion and Conclusion
 
 <!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
+
+At first glance the effectiveness of the drug seems promising to the general population because it should work 7/10’s of the time. But when broken down into sub categories such as sex, the LGBT population, and IV drug users the drug’s effectiveness is questionable. For example the drug is only useful about 4/10’s of the time for men and 3/10’s of the time for members of the LGBT community. And the drug seems to be harmful for women because women who take it are 1.5x more likely to contract AIDS. Not to mention that IV drug users are even more likely to contract AIDS than women because they are 2.7x more likely to get aids with the drug, which might be because there is women. Therefore, this drug is not effective enough to be released into the public
